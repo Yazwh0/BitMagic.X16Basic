@@ -30,6 +30,13 @@ public sealed class BasicSettings
     [JsonProperty("run")]
     public bool Run { get; set; } = true;
 
+    /// <summary>
+    /// Draw the whole screen when stopping, so output (eg a PRINT) shows straight away rather than when
+    /// the beam next gets to it. BASIC doesn't race the beam, so nothing is lost.
+    /// </summary>
+    [JsonProperty("renderOnStop")]
+    public bool RenderOnStop { get; set; } = true;
+
     /// <summary>The BASIC ROM's symbols, if they aren't in the project's symbols for ROM bank 4.</summary>
     [JsonProperty("symbols")]
     public string? Symbols { get; set; }

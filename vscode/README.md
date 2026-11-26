@@ -11,6 +11,7 @@ Debug Commander X16 BASIC programs in VS Code, running on the BitMagic emulator.
 - **Change variables** while stopped, numbers and strings.
 - **Stops on errors**, with BASIC's message: `?DIVISION BY ZERO ERROR IN 20`.
 - **X16 BASIC Live** in the Run and Debug view shows the line and variables while the program runs, and the line it's on is highlighted in the editor.
+- **X16 Screen** opens beside the code when debugging starts: the X16's display, updated while it runs and drawn in full at each stop. Click it and type, and the keys go to the X16. Turn off opening it with `bitMagicX16Basic.openScreen`, and open it again with "X16 BASIC: Show the X16 Screen".
 - If the program in memory isn't your file any more (changed at READY, or LOADed), it's shown as a listing of what's really there.
 
 Editing: syntax colouring for all X16 keywords, problems shown as you type (missing line numbers, duplicates, lines out of order, GOTOs to lines that don't exist), hovers for keywords and for the line a GOTO goes to, and Go to Definition on a line number.
@@ -36,6 +37,7 @@ Open a `.bas` file written with line numbers and press F5, or use the Debug butt
 | `onProgramEnd` | `ready` (default) stays at READY so you can RUN again; `terminate` ends the session. |
 | `stopOnEntry` | Stop on the first statement. |
 | `run` | `false` to load the program and leave it at READY. |
+| `renderOnStop` | Draw the whole screen when stopping (the default), so a PRINT shows straight away. |
 | `romFile`, `symbols` | A different ROM, and its `basic.sym` if needed. Not normally needed: BASIC is found in the ROM. |
 
 Strings can hold control codes the petcat way: `PRINT "{CLR}{RED}HELLO"`, or `{$93}` by number.

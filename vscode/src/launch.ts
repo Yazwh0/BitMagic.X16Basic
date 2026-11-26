@@ -9,6 +9,7 @@ export interface BasicLaunchConfiguration {
     onProgramEnd?: 'ready' | 'terminate';
     stopOnEntry?: boolean;
     run?: boolean;
+    renderOnStop?: boolean;
     romFile?: string;
     symbols?: string;
 }
@@ -20,6 +21,7 @@ export interface DebugModeSettings {
     onProgramEnd: string;
     stopOnEntry: boolean;
     run: boolean;
+    renderOnStop: boolean;
     symbols?: string;
 }
 
@@ -49,6 +51,7 @@ export function buildProject(config: BasicLaunchConfiguration, debugModeAssembly
         onProgramEnd: config.onProgramEnd ?? 'ready',
         stopOnEntry: config.stopOnEntry ?? false,
         run: config.run ?? true,
+        renderOnStop: config.renderOnStop ?? true,
     };
     if (config.symbols)
         settings.symbols = path.resolve(config.symbols);
