@@ -106,7 +106,7 @@ export class LiveMonitor implements vscode.WebviewViewProvider, vscode.Disposabl
         this.busy = true;
         try {
             const response = await session.customRequest('x16Mode', { command: 'live' });
-            const state = response?.result as LiveState | undefined;
+            const state = response?.Result as LiveState | undefined; // X16D's responses are PascalCase
             if (!state)
                 return;
 
