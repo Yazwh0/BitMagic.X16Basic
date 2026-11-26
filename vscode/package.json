@@ -30,6 +30,8 @@
     "main": "./out/extension.js",
     "activationEvents": [
         "onLanguage:x16basic",
+        "workspaceContains:**/*.bas",
+        "workspaceContains:**/*.x16bas",
         "onDebugResolve:x16basic",
         "onDebugDynamicConfigurations:x16basic"
     ],

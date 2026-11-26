@@ -12,6 +12,10 @@ let output: vscode.OutputChannel;
 
 export function activate(context: vscode.ExtensionContext) {
     output = vscode.window.createOutputChannel('X16 BASIC');
+
+    // BitMagic only checks for a new X16D when it activates, and on its own it wouldn't until a debug session
+    // starts, by when the old X16D is already running. So wake it up now, while a BASIC folder is opening.
+    vscode.extensions.getExtension('yazwh0.bitmagic')?.activate().then(undefined, e => output.appendLine(`Couldn't start the BitMagic extension: ${e}`));
     const live = new LiveMonitor();
     const screen = new ScreenPanel();
     registerEditorSupport(context);
