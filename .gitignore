@@ -9,3 +9,6 @@ out/
 vscode/debugmode/
 artifacts/
 Directory.Build.user.props
+
+# written by BitMagic during a debug session
+bitmagic-debug-session.json
