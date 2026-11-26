@@ -8,3 +8,4 @@ out/
 *.vsix
 vscode/debugmode/
 artifacts/
+Directory.Build.user.props

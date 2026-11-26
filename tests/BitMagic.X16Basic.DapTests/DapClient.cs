@@ -199,6 +199,12 @@ internal sealed class DapClient : IDisposable
 
     public JToken? ModeRequest(string command) => _host.SendRequestSync(new ModeRequest(command)).Result;
 
+    /// <summary>The screen as a PNG: what the window shows (<c>beam</c>), or drawn from VERA's state (<c>fromState</c>).</summary>
+    public string Screen(string? renderMode = null) => _host.SendRequestSync(new ScreenRequest(renderMode)).Display;
+
+    /// <summary>Presses or lets go of a key, by its Silk.NET name, as the screen tab does.</summary>
+    public bool Key(string key, bool down) => _host.SendRequestSync(new KeyboardRequest(key, down)).Success;
+
     public ExceptionInfoResponse ExceptionInfo() => _host.SendRequestSync(new ExceptionInfoRequest(0));
 
     public void Dispose()

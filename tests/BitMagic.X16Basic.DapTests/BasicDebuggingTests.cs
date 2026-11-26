@@ -55,6 +55,33 @@ public sealed class BasicDebuggingTests
 
     /// <summary>BitMagic's own ROM, which has no symbols, so the addresses are found in the ROM.</summary>
     [TestMethod]
+    public void StoppingDrawsTheWholeScreen()
+    {
+        using var client = DapClient.Start();
+        client.Launch("10 PRINT \"{CLR}HELLO\"\n20 FOR I=1 TO 5:PRINT I:NEXT\n30 A=1\n40 GOTO 40\n", breakpointLines: [3]);
+        Assert.AreEqual(StoppedEvent.ReasonValue.Breakpoint, client.WaitForStop().Reason);
+
+        // what the window has is the same as drawing the screen afresh, so the PRINTs show
+        Assert.AreEqual(client.Screen("fromState"), client.Screen());
+    }
+
+    [TestMethod]
+    public void TypingReachesTheProgram()
+    {
+        using var client = DapClient.Start();
+        client.Launch("10 GET K$:IF K$=\"\" GOTO 10\n20 A=1\n30 GOTO 30\n", breakpointLines: [2]);
+
+        // let BASIC get to the GET loop, then press and let go of a key, as the screen tab does
+        System.Threading.Thread.Sleep(2000);
+        Assert.IsTrue(client.Key("Q", true));
+        System.Threading.Thread.Sleep(100);
+        Assert.IsTrue(client.Key("Q", false));
+
+        Assert.AreEqual(StoppedEvent.ReasonValue.Breakpoint, client.WaitForStop().Reason);
+        Assert.AreEqual("\"Q\"", client.Evaluate("K$"));
+    }
+
+    [TestMethod]
     public void WorksWithX16DsRomAndNoSymbols()
     {
         using var client = DapClient.Start(x16dRom: true);

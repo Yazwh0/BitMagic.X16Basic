@@ -5,13 +5,22 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 
+  </PropertyGroup>
+
+  <!-- Your own settings for this machine, eg UseLocalBitMagic or BitMagicRoot. Not in git. -->
+  <Import Project="$(MSBuildThisFileDirectory)Directory.Build.user.props" Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.user.props')" />
+
+  <PropertyGroup>
     <!--
-      true: reference the BitMagic projects from a checkout next to this one (../BitMagic).
+      true: reference the BitMagic projects from a checkout (BitMagicRoot, ../BitMagic by default).
       false: use the published NuGet packages instead, at BitMagicPackageVersion.
+      Left unset it's true if there's a checkout there and false if not (eg in CI). Set it in
+      Directory.Build.user.props, the environment, or on the command line (-p:UseLocalBitMagic=false).
     -->
-    <UseLocalBitMagic Condition="'$(UseLocalBitMagic)' == ''">true</UseLocalBitMagic>
     <BitMagicRoot Condition="'$(BitMagicRoot)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'BitMagic'))</BitMagicRoot>
-    <BitMagicPackageVersion Condition="'$(BitMagicPackageVersion)' == ''">*</BitMagicPackageVersion>
+    <UseLocalBitMagic Condition="'$(UseLocalBitMagic)' == '' and Exists('$(BitMagicRoot)BitMagic.X16Debugger\BitMagic.X16Debugger\BitMagic.X16Debugger.csproj')">true</UseLocalBitMagic>
+    <UseLocalBitMagic Condition="'$(UseLocalBitMagic)' == ''">false</UseLocalBitMagic>
+    <BitMagicPackageVersion Condition="'$(BitMagicPackageVersion)' == ''">0.1.92</BitMagicPackageVersion>
 
     <!-- Where the ROM tests find rom.bin and the .sym files. -->
     <X16RomDirectory Condition="'$(X16RomDirectory)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'x16-rom', 'build', 'x16'))</X16RomDirectory>

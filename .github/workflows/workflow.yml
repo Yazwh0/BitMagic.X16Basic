@@ -1,0 +1,182 @@
+name: Build
+
+# Builds and tests on every push and pull request. A tag like v0.2.0 also publishes that version:
+# the NuGet packages, and the extension to the VS Marketplace and Open VSX.
+#
+# BitMagic comes from its NuGet packages here (there's no ../BitMagic checkout), at BitMagicPackageVersion
+# in Directory.Build.props, and X16D from BitMagic's latest GitHub release.
+#
+# Publishing uses trusted publishing (OIDC) for NuGet and the Marketplace, so the policies on nuget.org and the
+# Marketplace name this file. Open VSX still needs a token, the VSCODIUM secret.
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  # the official emulator's ROM and symbols, for the ROM and DAP tests
+  X16_EMULATOR_VERSION: r48
+
+jobs:
+  build:
+    runs-on: windows-2022
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # v0.2.0 -> 0.2.0; anything else gets a build number, so the artifacts are still usable
+      - name: Version
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then v="${GITHUB_REF#refs/tags/v}"; else v="0.0.${{ github.run_number }}"; fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "Version $v"
+
+      - name: Get the ROM
+        shell: bash
+        run: |
+          gh release download "$X16_EMULATOR_VERSION" -R X16Community/x16-emulator -p "x16emu_win64-$X16_EMULATOR_VERSION.zip" -D "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP/x16emu_win64-$X16_EMULATOR_VERSION.zip" -d "$RUNNER_TEMP/x16emu"
+          echo "X16_ROM_DIR=$RUNNER_TEMP/x16emu" >> "$GITHUB_ENV"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Unit tests
+        run: dotnet test tests/BitMagic.X16Basic.Tests -c Release
+
+      - name: ROM tests
+        run: dotnet test tests/BitMagic.X16Basic.RomTests -c Release -p:Platform=x64
+
+      - name: Pack
+        run: |
+          dotnet pack src/BitMagic.X16Basic -c Release -p:Version=${{ steps.version.outputs.version }}
+          dotnet pack src/BitMagic.X16Basic.Debugger -c Release -p:Platform=x64 -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Extension
+        working-directory: vscode
+        shell: bash
+        run: |
+          npm ci
+          npm run compile
+          npm test
+          npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
+          npx @vscode/vsce@4.1.1 package -o "bitmagic-x16basic-${{ steps.version.outputs.version }}.vsix"
+        env:
+          CONFIGURATION: Release # which build of the debug mode vscode:prepublish copies in
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget
+          path: artifacts/packages/*
+
+      - name: Upload extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: vscode/*.vsix
+
+  # End to end: the debug mode in X16D over DAP. X16D opens the emulator window, so Mesa's software OpenGL is
+  # put next to it. Allowed to fail while it's proven on the runners.
+  dap-tests:
+    runs-on: windows-2022
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Get the ROM, X16D and Mesa
+        shell: bash
+        run: |
+          gh release download "$X16_EMULATOR_VERSION" -R X16Community/x16-emulator -p "x16emu_win64-$X16_EMULATOR_VERSION.zip" -D "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP/x16emu_win64-$X16_EMULATOR_VERSION.zip" -d "$RUNNER_TEMP/x16emu"
+          echo "X16_ROM_DIR=$RUNNER_TEMP/x16emu" >> "$GITHUB_ENV"
+
+          gh release download latest -R Yazwh0/BitMagic -p BitMagic-TheDebugger.Windows.zip -D "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP/BitMagic-TheDebugger.Windows.zip" -d "$RUNNER_TEMP/x16d"
+          echo "X16D_PATH=$RUNNER_TEMP/x16d/X16D.exe" >> "$GITHUB_ENV"
+
+          gh release download -R pal1000/mesa-dist-win -p "mesa3d-*-release-msvc.7z" -D "$RUNNER_TEMP"
+          7z x -y -o"$RUNNER_TEMP/mesa" "$RUNNER_TEMP"/mesa3d-*-release-msvc.7z > /dev/null
+          cp "$RUNNER_TEMP"/mesa/x64/*.dll "$RUNNER_TEMP/x16d/"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      # Debug, as that's where the tests look for the debug mode; packed too, for the package loading test
+      - name: Build the debug mode
+        run: |
+          dotnet pack src/BitMagic.X16Basic -c Debug
+          dotnet pack src/BitMagic.X16Basic.Debugger -c Debug -p:Platform=x64
+
+      - name: DAP tests
+        run: dotnet test tests/BitMagic.X16Basic.DapTests
+        env:
+          GALLIUM_DRIVER: llvmpipe
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # OIDC, for NuGet and Marketplace trusted publishing
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget
+          path: nuget
+
+      - name: Download extension
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+          path: vsix
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # the .snupkg symbols go up with their packages
+      - name: Push to NuGet
+        run: dotnet nuget push "nuget/*.nupkg" --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Publish to the VS Marketplace
+        run: npx @vscode/vsce@4.1.1 publish --oidc --packagePath vsix/*.vsix
+
+      - name: Publish to Open VSX
+        run: npx ovsx@1.4.0 publish -p ${{ secrets.VSCODIUM }} --packagePath vsix/*.vsix

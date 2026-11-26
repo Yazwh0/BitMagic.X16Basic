@@ -1,0 +1,10 @@
+<Project>
+  <!-- Copy to Directory.Build.user.props (not in git) to set things for this machine. -->
+  <PropertyGroup>
+    <!-- false: build against the NuGet packages even though there's a BitMagic checkout -->
+    <UseLocalBitMagic>false</UseLocalBitMagic>
+
+    <!-- a BitMagic checkout somewhere other than ../BitMagic -->
+    <!-- <BitMagicRoot>D:\Work\BitMagic\</BitMagicRoot> -->
+  </PropertyGroup>
+</Project>

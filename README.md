@@ -17,7 +17,7 @@ See [plan.md](plan.md) for the design and where it's up to, and [vscode/README.m
 
 ## Building
 
-Needs a BitMagic checkout next to this one (`../BitMagic`) with the debug mode changes (see plan.md), or set `UseLocalBitMagic=false` to use NuGet packages once they're published. The library and its unit tests build with `dotnet`; anything that touches the emulator needs MSBuild (x64), as BitMagic's own projects do.
+BitMagic comes from a checkout next to this one (`../BitMagic`) if there is one, and from its NuGet packages if not (as in CI), at `BitMagicPackageVersion`. To choose for yourself, set `UseLocalBitMagic` to `true` or `false`, and `BitMagicRoot` for a checkout somewhere else. Put them in `Directory.Build.user.props` (copy `Directory.Build.user.props.example`; it isn't in git), the environment, or on the command line (`-p:UseLocalBitMagic=false`). The packages need a BitMagic release with debug modes. The library and its unit tests build with `dotnet`; anything that touches the emulator needs MSBuild (x64), as BitMagic's own projects do.
 
 ```sh
 dotnet test tests/BitMagic.X16Basic.Tests     # unit tests
@@ -31,6 +31,10 @@ npm run debugmode                             # copies the built debug mode into
 ```
 
 `daptests.sh` also packs `BitMagic.X16Basic` and `BitMagic.X16Basic.Debugger` into `artifacts/packages`.
+
+## Releasing
+
+`.github/workflows/workflow.yml` builds and tests every push and pull request against BitMagic's NuGet packages. Push a tag such as `v0.2.0` to publish that version: both NuGet packages, and the extension to the VS Marketplace and Open VSX. NuGet and the Marketplace use trusted publishing, so their policies name `workflow.yml`; Open VSX uses the `VSCODIUM` secret, and NuGet's login the `NUGET_USER` one.
 
 ## The debug mode in a project
 

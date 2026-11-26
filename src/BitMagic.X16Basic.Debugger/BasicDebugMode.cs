@@ -174,6 +174,32 @@ public sealed partial class BasicDebugMode : IX16DebugMode
 
     public DebugModeStop OnSystemBreakpoint(int debuggerAddress)
     {
+        var stop = SystemBreakpoint(debuggerAddress);
+        if (stop.Stop && _settings.RenderOnStop)
+            RenderScreen();
+        return stop;
+    }
+
+    private byte[]? _frame;
+
+    /// <summary>
+    /// Draws the whole screen from VERA as it is now and leaves it in the display, so the window shows it.
+    /// Only the display is run, on a copy of the state, so the emulation itself is unchanged: when it carries
+    /// on the beam redraws the same lines from where it was.
+    /// </summary>
+    private void RenderScreen()
+    {
+        if (_emulator.Headless)
+            return;
+
+        _frame ??= new byte[_emulator.DisplayRaw.Length];
+        _emulator.RenderAhead(_emulator.RenderAheadCycles(Emulator.DisplayRenderMode.FromState), () => _emulator.DisplayRaw.CopyTo(_frame));
+        _frame.CopyTo(_emulator.DisplayRaw);
+        _emulator.RenderReady = true;
+    }
+
+    private DebugModeStop SystemBreakpoint(int debuggerAddress)
+    {
         var address = debuggerAddress & 0xffff;
 
         if (_sysTarget == debuggerAddress)

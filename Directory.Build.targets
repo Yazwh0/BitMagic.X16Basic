@@ -11,4 +11,13 @@
   <ItemGroup Condition="'$(PackageLicenseExpression)' == '' and '$(IsPackable)' != 'false'">
     <None Include="$(MSBuildThisFileDirectory)LICENSE.txt" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
+
+  <!-- BitMagic's butterfly with BASIC on it, the same as the VS Code extension's -->
+  <PropertyGroup Condition="'$(IsPackable)' != 'false'">
+    <PackageIcon>icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' != 'false'">
+    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
 </Project>

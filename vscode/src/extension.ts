@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import { BasicLaunchConfiguration, bitMagicConfiguration, buildProject, debugModeAssembly, parseJsonWithComments } from './launch';
 import { LiveMonitor } from './live';
+import { ScreenPanel } from './screen';
 import { registerEditorSupport } from './editor';
 
 let output: vscode.OutputChannel;
@@ -11,16 +12,19 @@ let output: vscode.OutputChannel;
 export function activate(context: vscode.ExtensionContext) {
     output = vscode.window.createOutputChannel('X16 BASIC');
     const live = new LiveMonitor();
+    const screen = new ScreenPanel();
     registerEditorSupport(context);
 
     context.subscriptions.push(
         output,
         live,
+        screen,
         vscode.window.registerWebviewViewProvider(LiveMonitor.viewId, live),
         vscode.debug.registerDebugConfigurationProvider('x16basic', new BasicConfigurationProvider(context)),
         vscode.debug.registerDebugConfigurationProvider('x16basic', new DynamicConfigurationProvider(), vscode.DebugConfigurationProviderTriggerKind.Dynamic),
         vscode.commands.registerCommand('x16basic.debugFile', (uri?: vscode.Uri) => startFile(uri, false)),
         vscode.commands.registerCommand('x16basic.runFile', (uri?: vscode.Uri) => startFile(uri, true)),
+        vscode.commands.registerCommand('x16basic.showScreen', () => screen.show()),
     );
 }
 
