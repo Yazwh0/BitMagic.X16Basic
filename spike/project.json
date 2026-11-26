@@ -1,0 +1,8 @@
+{
+    "source": "spike.bmasm",
+    "autobootRun": true,
+    "symbols": [
+        { "symbols": "C:/Documents/Source/x16-rom/build/x16/kernal.sym", "romBank": 0 },
+        { "symbols": "C:/Documents/Source/x16-rom/build/x16/basic.sym", "romBank": 4 }
+    ]
+}

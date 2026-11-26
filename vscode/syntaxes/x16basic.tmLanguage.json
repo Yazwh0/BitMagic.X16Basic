@@ -1,0 +1,155 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "X16 BASIC",
+    "scopeName": "source.x16basic",
+    "patterns": [
+        {
+            "include": "#lineNumber"
+        },
+        {
+            "include": "#statement"
+        }
+    ],
+    "repository": {
+        "lineNumber": {
+            "match": "^\\s*([0-9][0-9 ]*)",
+            "captures": {
+                "1": {
+                    "name": "entity.name.label.line-number.x16basic"
+                }
+            }
+        },
+        "statement": {
+            "patterns": [
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#rem"
+                },
+                {
+                    "include": "#data"
+                },
+                {
+                    "include": "#keywords"
+                },
+                {
+                    "include": "#number"
+                },
+                {
+                    "include": "#variable"
+                },
+                {
+                    "include": "#operator"
+                },
+                {
+                    "match": ":",
+                    "name": "punctuation.separator.statement.x16basic"
+                },
+                {
+                    "match": ",|;",
+                    "name": "punctuation.separator.x16basic"
+                }
+            ]
+        },
+        "string": {
+            "begin": "\"",
+            "end": "\"|$",
+            "name": "string.quoted.double.x16basic",
+            "patterns": [
+                {
+                    "match": "\\{[^}]*\\}",
+                    "name": "constant.character.escape.x16basic"
+                }
+            ]
+        },
+        "rem": {
+            "match": "(?i)(REM)(.*)$",
+            "captures": {
+                "1": {
+                    "name": "keyword.other.rem.x16basic"
+                },
+                "2": {
+                    "name": "comment.line.rem.x16basic"
+                }
+            }
+        },
+        "data": {
+            "begin": "(?i)(DATA)",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.other.data.x16basic"
+                }
+            },
+            "end": "(?=:)|$",
+            "patterns": [
+                {
+                    "include": "#string"
+                },
+                {
+                    "include": "#number"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.x16basic"
+                },
+                {
+                    "match": "[^,:\"]+",
+                    "name": "string.unquoted.data.x16basic"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "match": "(?i)(RETURN|GOSUB|NEXT|GOTO|STEP|THEN|STOP|CONT|END|FOR|RUN|GO|TO|IF|ON)",
+                    "name": "keyword.control.x16basic"
+                },
+                {
+                    "match": "(?i)(I2CPEEK|POINTER|RIGHT\\$|STRPTR|MWHEEL|LEFT\\$|VPEEK|TDATA|TATTR|TAB\\(|SPC\\(|PEEK|STR\\$|CHR\\$|MID\\$|HEX\\$|BIN\\$|RPT\\$|SGN|INT|ABS|USR|FRE|POS|SQR|RND|LOG|EXP|COS|SIN|TAN|ATN|LEN|VAL|ASC|JOY|FN|MX|MY|MB)",
+                    "name": "support.function.x16basic"
+                },
+                {
+                    "match": "(?i)(AND|NOT|OR)",
+                    "name": "keyword.operator.word.x16basic"
+                },
+                {
+                    "match": "(?i)(PSGCHORD|POWEROFF|RESTORE|BVERIFY|FMCHORD|PSGINIT|PSGNOTE|PSGFREQ|PSGPLAY|I2CPOKE|LINPUT\\#|BINPUT\\#|BASLOAD|INPUT\\#|VERIFY|PRINT\\#|SCREEN|LOCATE|KEYMAP|BVLOAD|FMINIT|FMNOTE|FMDRUM|FMINST|FMFREQ|FMPLAY|FMPOKE|PSGVOL|PSGWAV|PSGPAN|REBOOT|LINPUT|BANNER|SPRITE|SPRMEM|MOVSPR|INPUT|PRINT|CLOSE|VPOKE|VLOAD|FRAME|MOUSE|COLOR|RESET|CODEX|BLOAD|FMVIB|FMVOL|FMPAN|SLEEP|BSAVE|DATA|READ|WAIT|LOAD|SAVE|POKE|LIST|OPEN|GEOS|PSET|LINE|RECT|CHAR|TEST|BOOT|BANK|MENU|HELP|EXEC|TILE|EDIT|OVAL|RING|DIM|LET|DEF|CLR|CMD|SYS|GET|NEW|MON|DOS|OLD|CLS|REN)",
+                    "name": "keyword.other.x16basic"
+                },
+                {
+                    "match": "\\?",
+                    "name": "keyword.other.print.x16basic"
+                },
+                {
+                    "match": "π|\\{PI\\}",
+                    "name": "constant.language.pi.x16basic"
+                }
+            ]
+        },
+        "number": {
+            "patterns": [
+                {
+                    "match": "\\$[0-9A-Fa-f]+",
+                    "name": "constant.numeric.hex.x16basic"
+                },
+                {
+                    "match": "%[01]+",
+                    "name": "constant.numeric.binary.x16basic"
+                },
+                {
+                    "match": "(?:[0-9]+\\.?[0-9]*|\\.[0-9]+)(?:[eE][-+]?[0-9]+)?",
+                    "name": "constant.numeric.decimal.x16basic"
+                }
+            ]
+        },
+        "variable": {
+            "match": "[A-Za-z][A-Za-z0-9]*[$%]?",
+            "name": "variable.other.x16basic"
+        },
+        "operator": {
+            "match": "<>|<=|>=|[-+*/^=<>]",
+            "name": "keyword.operator.x16basic"
+        }
+    }
+}

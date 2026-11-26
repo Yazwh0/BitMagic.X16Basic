@@ -1,0 +1,9 @@
+{
+    "startStepping": false,
+    "debugMode": {
+        "assembly": "../../vscode/debugmode/BitMagic.X16Basic.Debugger.dll",
+        "settings": {
+            "source": "demo.bas"
+        }
+    }
+}

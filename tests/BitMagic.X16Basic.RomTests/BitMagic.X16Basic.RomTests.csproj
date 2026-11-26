@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Runs our tokeniser and decoders against the real BASIC ROM on the BitMagic emulator.
+    Needs the native EmulatorCore, so like BitMagic's own emulator tests it is x64 only
+    and a Debug build has to go through MSBuild rather than dotnet build:
+
+      msbuild tests/BitMagic.X16Basic.RomTests /restore /p:Configuration=Debug /p:Platform=x64
+      dotnet test tests/BitMagic.X16Basic.RomTests (no-build, Platform=x64)
+  -->
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <NoWarn>$(NoWarn);MSTEST0037</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BitMagic.X16Basic\BitMagic.X16Basic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalBitMagic)' == 'true'">
+    <ProjectReference Include="$(BitMagicRoot)BitMagic.X16Emulator\BitMagic.X16Emulator\BitMagic.X16Emulator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalBitMagic)' != 'true'">
+    <PackageReference Include="BitMagic.X16Emulator" Version="$(BitMagicPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>X16RomDirectory</_Parameter1>
+      <_Parameter2>$(X16RomDirectory)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

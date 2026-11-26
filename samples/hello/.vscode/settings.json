@@ -1,0 +1,7 @@
+{
+    // Until a BitMagic release has debug modes, point BitMagic at an X16D built from ../BitMagic
+    "bitMagic.debugger.alternativePath": "C:/Documents/Source/BitMagic/BitMagic.X16Debugger/X16D/bin/x64/Debug/net10.0",
+    "cSpell.words": [
+        "GOSUB"
+    ]
+}

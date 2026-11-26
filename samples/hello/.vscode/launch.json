@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "x16basic",
+            "request": "launch",
+            "name": "Debug the open BASIC file",
+            "program": "${file}"
+        },
+        {
+            "type": "x16basic",
+            "request": "launch",
+            "name": "Debug demo.bas",
+            "program": "${workspaceFolder}/demo.bas"
+        },
+        {
+            "type": "x16basic",
+            "request": "launch",
+            "name": "Debug hello.bas",
+            "program": "${workspaceFolder}/hello.bas"
+        }
+    ]
+}

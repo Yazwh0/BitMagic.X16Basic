@@ -1,0 +1,10 @@
+bin/
+obj/
+TestResults/
+.vs/
+*.user
+node_modules/
+out/
+*.vsix
+vscode/debugmode/
+artifacts/

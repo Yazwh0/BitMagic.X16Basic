@@ -1,0 +1,228 @@
+{
+    "name": "bitmagic-x16basic",
+    "displayName": "BitMagic X16 BASIC",
+    "description": "Debug Commander X16 BASIC: breakpoints, stepping, GOSUB call stack, variables and arrays, watches, and stop on error. Built on the BitMagic X16 debugger.",
+    "version": "0.1.0",
+    "preview": true,
+    "publisher": "yazwh0",
+    "license": "SEE LICENSE IN LICENSE",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Yazwh0/BitMagic.X16Basic"
+    },
+    "engines": {
+        "vscode": "^1.95.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Debuggers"
+    ],
+    "keywords": [
+        "Commander X16",
+        "X16",
+        "BASIC",
+        "6502",
+        "retro"
+    ],
+    "extensionDependencies": [
+        "yazwh0.bitmagic"
+    ],
+    "main": "./out/extension.js",
+    "activationEvents": [
+        "onLanguage:x16basic",
+        "onDebugResolve:x16basic",
+        "onDebugDynamicConfigurations:x16basic"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "x16basic",
+                "aliases": [
+                    "X16 BASIC",
+                    "x16basic"
+                ],
+                "extensions": [
+                    ".bas",
+                    ".x16bas"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "x16basic",
+                "scopeName": "source.x16basic",
+                "path": "./syntaxes/x16basic.tmLanguage.json"
+            }
+        ],
+        "views": {
+            "debug": [
+                {
+                    "type": "webview",
+                    "id": "x16basic.live",
+                    "name": "X16 BASIC Live",
+                    "when": "debugType == bmasm"
+                }
+            ]
+        },
+        "breakpoints": [
+            {
+                "language": "x16basic"
+            }
+        ],
+        "commands": [
+            {
+                "command": "x16basic.debugFile",
+                "title": "Debug BASIC File",
+                "category": "X16 BASIC",
+                "icon": "$(debug-alt)",
+                "enablement": "editorLangId == x16basic"
+            },
+            {
+                "command": "x16basic.runFile",
+                "title": "Run BASIC File",
+                "category": "X16 BASIC",
+                "icon": "$(play)",
+                "enablement": "editorLangId == x16basic"
+            }
+        ],
+        "menus": {
+            "editor/title/run": [
+                {
+                    "command": "x16basic.debugFile",
+                    "when": "resourceLangId == x16basic",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "x16basic.runFile",
+                    "when": "resourceLangId == x16basic",
+                    "group": "navigation@2"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "BitMagic X16 BASIC",
+            "properties": {
+                "bitMagicX16Basic.debugModePath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Use this BitMagic.X16Basic.Debugger.dll (or the folder it's in) instead of the one that comes with the extension. For developing the debugger."
+                }
+            }
+        },
+        "debuggers": [
+            {
+                "type": "x16basic",
+                "label": "X16 BASIC",
+                "languages": [
+                    "x16basic"
+                ],
+                "configurationAttributes": {
+                    "launch": {
+                        "required": [
+                            "program"
+                        ],
+                        "properties": {
+                            "program": {
+                                "type": "string",
+                                "description": "The BASIC program to debug, written with line numbers.",
+                                "default": "${file}"
+                            },
+                            "project": {
+                                "type": "string",
+                                "description": "A BitMagic project.json to take everything else from: ROM, SD card, symbols, window and so on. Its debugMode is set from this configuration."
+                            },
+                            "charset": {
+                                "type": "string",
+                                "enum": [
+                                    "upper",
+                                    "mixed"
+                                ],
+                                "enumDescriptions": [
+                                    "Upper case and graphics, the X16's default: letters in strings are upper case.",
+                                    "Lower and upper case: letters in strings keep their case. Keywords can still be either."
+                                ],
+                                "default": "upper",
+                                "description": "Which character set the program's strings are written for."
+                            },
+                            "onProgramEnd": {
+                                "type": "string",
+                                "enum": [
+                                    "ready",
+                                    "terminate"
+                                ],
+                                "enumDescriptions": [
+                                    "Stay at READY, so the program can be RUN again or changed.",
+                                    "End the debug session."
+                                ],
+                                "default": "ready",
+                                "description": "What happens when the program ends."
+                            },
+                            "stopOnEntry": {
+                                "type": "boolean",
+                                "default": false,
+                                "description": "Stop on the first statement."
+                            },
+                            "run": {
+                                "type": "boolean",
+                                "default": true,
+                                "description": "RUN the program once it's loaded. If false it's left at READY."
+                            },
+                            "romFile": {
+                                "type": "string",
+                                "description": "The ROM to use, if not BitMagic's."
+                            },
+                            "symbols": {
+                                "type": "string",
+                                "description": "The ROM's basic.sym. Not normally needed: BASIC is found in the ROM."
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": [
+                    {
+                        "type": "x16basic",
+                        "request": "launch",
+                        "name": "Debug BASIC",
+                        "program": "${file}"
+                    }
+                ],
+                "configurationSnippets": [
+                    {
+                        "label": "X16 BASIC: Debug",
+                        "description": "Debug a BASIC program on the Commander X16.",
+                        "body": {
+                            "type": "x16basic",
+                            "request": "launch",
+                            "name": "Debug BASIC",
+                            "program": "^\"\\${file}\""
+                        }
+                    },
+                    {
+                        "label": "X16 BASIC: Debug with a project",
+                        "description": "Debug a BASIC program, taking the ROM, SD card and so on from a BitMagic project.json.",
+                        "body": {
+                            "type": "x16basic",
+                            "request": "launch",
+                            "name": "Debug BASIC",
+                            "program": "^\"\\${workspaceFolder}/${1:main.bas}\"",
+                            "project": "^\"\\${workspaceFolder}/${2:project.json}\""
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile && npm run debugmode",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "debugmode": "node scripts/copy-debugmode.js",
+        "test": "node --test out/test/launch.test.js out/test/analysis.test.js"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.95.0",
+        "typescript": "^5.6.0"
+    }
+}

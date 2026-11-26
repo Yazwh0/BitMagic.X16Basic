@@ -1,0 +1,14 @@
+<Project>
+  <!--
+    GPL-3.0, the same as BitMagic: the licence text itself ships in each package (PackageLicenseFile).
+    In a .targets so it's evaluated after the project, and leaves alone any that set their own
+    PackageLicenseExpression (NuGet rejects both, NU5033). NuGet needs the file to end .txt or .md (NU5030).
+  -->
+  <PropertyGroup Condition="'$(PackageLicenseExpression)' == ''">
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(PackageLicenseExpression)' == '' and '$(IsPackable)' != 'false'">
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.txt" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>

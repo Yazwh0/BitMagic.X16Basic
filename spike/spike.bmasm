@@ -1,0 +1,29 @@
+.machine CommanderX16R42
+.org $801
+; 10 A=1:B=A+2
+.l10:
+.word l20
+.word 10
+.byte $41, $b2, $31, $3a, $42, $b2, $41, $aa, $32, $00
+; 20 GOSUB100
+.l20:
+.word l30
+.word 20
+.byte $8d, $31, $30, $30, $00
+; 30 PRINTB
+.l30:
+.word l40
+.word 30
+.byte $99, $42, $00
+; 40 END
+.l40:
+.word l100
+.word 40
+.byte $80, $00
+; 100 A$="HI":RETURN
+.l100:
+.word lend
+.word 100
+.byte $41, $24, $b2, $22, $48, $49, $22, $3a, $8e, $00
+.lend:
+.word 0

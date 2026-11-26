@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The BASIC debug mode X16D loads (see BitMagic.X16Debugger/Modes). It's built against X16D's own
+    BitMagic.X16Debugger, which X16D supplies at run time, so that isn't copied to the output.
+    BitMagic.X16Debugger pulls in the native emulator core, so like X16D this builds with MSBuild, x64:
+
+      msbuild src/BitMagic.X16Basic.Debugger /restore /p:Configuration=Debug /p:Platform=x64
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>BitMagic.X16Basic.Debugger</RootNamespace>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <Description>Debugs Commander X16 BASIC in X16D.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BitMagic.X16Basic\BitMagic.X16Basic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalBitMagic)' == 'true'">
+    <ProjectReference Include="$(BitMagicRoot)BitMagic.X16Debugger\BitMagic.X16Debugger\BitMagic.X16Debugger.csproj" Private="false" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UseLocalBitMagic)' != 'true'">
+    <PackageReference Include="BitMagic.X16Debugger" Version="$(BitMagicPackageVersion)" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

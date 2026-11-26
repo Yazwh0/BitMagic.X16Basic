@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>BitMagic.X16Basic</RootNamespace>
+    <Description>Commander X16 BASIC: tokeniser, detokeniser, source maps and decoders for BASIC's memory structures.</Description>
+  </PropertyGroup>
+
+</Project>

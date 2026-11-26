@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    End to end: starts X16D, launches a BASIC project through the debug mode and drives it over DAP
+    as VS Code would. Needs X16D and the debug mode built first (../BitMagic X16D, x64 Debug, and
+    src/BitMagic.X16Basic.Debugger), and opens the emulator window while it runs.
+  -->
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);MSTEST0037</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Shared.VSCodeDebugProtocol" Version="17.2.60629.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>X16D</_Parameter1>
+      <_Parameter2>$(BitMagicRoot)BitMagic.X16Debugger\X16D\bin\x64\Debug\net10.0\X16D.exe</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>DebugMode</_Parameter1>
+      <_Parameter2>$(MSBuildThisFileDirectory)..\..\src\BitMagic.X16Basic.Debugger\bin\x64\Debug\net10.0\BitMagic.X16Basic.Debugger.dll</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>X16RomDirectory</_Parameter1>
+      <_Parameter2>$(X16RomDirectory)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

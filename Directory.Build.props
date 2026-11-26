@@ -1,0 +1,38 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+
+    <!--
+      true: reference the BitMagic projects from a checkout next to this one (../BitMagic).
+      false: use the published NuGet packages instead, at BitMagicPackageVersion.
+    -->
+    <UseLocalBitMagic Condition="'$(UseLocalBitMagic)' == ''">true</UseLocalBitMagic>
+    <BitMagicRoot Condition="'$(BitMagicRoot)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'BitMagic'))</BitMagicRoot>
+    <BitMagicPackageVersion Condition="'$(BitMagicPackageVersion)' == ''">*</BitMagicPackageVersion>
+
+    <!-- Where the ROM tests find rom.bin and the .sym files. -->
+    <X16RomDirectory Condition="'$(X16RomDirectory)' == ''">$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'x16-rom', 'build', 'x16'))</X16RomDirectory>
+  </PropertyGroup>
+
+  <!-- NuGet packages: only src/ is packed, see IsPackable in the test projects -->
+  <PropertyGroup>
+    <Version Condition="'$(Version)' == ''">0.1.0</Version>
+    <Authors>Yazwh0</Authors>
+    <Company>BitMagic</Company>
+    <PackageProjectUrl>https://bitmagic.org</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Yazwh0/BitMagic.X16Basic</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>commander-x16;x16;basic;6502;bitmagic;debugger</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)artifacts\packages</PackageOutputPath>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' != 'false'">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>
