@@ -18,6 +18,8 @@ Editing: syntax colouring for all X16 keywords, problems shown as you type (miss
 
 ## Use
 
+To start from scratch, run "X16 BASIC: Create X16 BASIC Project" (or the button in the Explorer when no folder is open). It writes a short `main.bas` and a `launch.json` into the folder you pick, without overwriting anything already there, and opens it.
+
 Open a `.bas` file written with line numbers and press F5, or use the Debug button on the editor's title bar. To set it up in `launch.json`:
 
 ```json
