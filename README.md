@@ -34,7 +34,7 @@ npm run debugmode                             # copies the built debug mode into
 
 ## Releasing
 
-`.github/workflows/workflow.yml` builds and tests every push and pull request against BitMagic's NuGet packages. Push a tag such as `v0.2.0` to publish that version: both NuGet packages, and the extension to the VS Marketplace and Open VSX. NuGet and the Marketplace use trusted publishing, so their policies name `workflow.yml`; Open VSX uses the `VSCODIUM` secret, and NuGet's login the `NUGET_USER` one.
+`.github/workflows/workflow.yml` builds and tests every push and pull request against BitMagic's NuGet packages. The DAP tests need a display, so they aren't run there: run `./daptests.sh` before a release. Push a tag such as `v0.2.0` to publish that version: both NuGet packages, and the extension to the VS Marketplace and Open VSX. NuGet and the Marketplace use trusted publishing, so their policies name `workflow.yml`; Open VSX uses the `VSCODIUM` secret, and NuGet's login the `NUGET_USER` one.
 
 ## The debug mode in a project
 
