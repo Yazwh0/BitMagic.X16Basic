@@ -97,8 +97,9 @@ export class ScreenPanel implements vscode.Disposable {
         this.busy = true;
         try {
             const response = await session.customRequest('getScreen', {});
-            if (response?.display)
-                this.panel?.webview.postMessage({ type: 'frame', png: response.display, running: this.running.has(session.id) });
+            const png = response?.Display; // X16D's responses are PascalCase
+            if (png)
+                this.panel?.webview.postMessage({ type: 'frame', png, running: this.running.has(session.id) });
         } catch {
             // the session is ending
         } finally {
