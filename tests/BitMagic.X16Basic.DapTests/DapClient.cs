@@ -60,6 +60,7 @@ internal sealed class DapClient : IDisposable
 
         var psi = new ProcessStartInfo(X16D)
         {
+            Arguments = "--headless", // no emulator window popping up
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,

@@ -72,6 +72,11 @@
         ],
         "commands": [
             {
+                "command": "x16basic.createProject",
+                "title": "Create X16 BASIC Project",
+                "category": "X16 BASIC"
+            },
+            {
                 "command": "x16basic.showScreen",
                 "title": "Show the X16 Screen",
                 "category": "X16 BASIC",
@@ -90,6 +95,13 @@
                 "category": "X16 BASIC",
                 "icon": "$(play)",
                 "enablement": "editorLangId == x16basic"
+            }
+        ],
+        "viewsWelcome": [
+            {
+                "view": "explorer",
+                "contents": "You can create a new X16 BASIC project, with a program to try the debugger on.\n[Create X16 BASIC Project](command:x16basic.createProject)",
+                "when": "workspaceFolderCount == 0"
             }
         ],
         "menus": {
@@ -234,7 +246,7 @@
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "debugmode": "node scripts/copy-debugmode.js",
-        "test": "node --test out/test/launch.test.js out/test/analysis.test.js out/test/keys.test.js"
+        "test": "node --test out/test/launch.test.js out/test/analysis.test.js out/test/keys.test.js out/test/template.test.js"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",

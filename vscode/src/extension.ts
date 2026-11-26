@@ -6,6 +6,7 @@ import { BasicLaunchConfiguration, bitMagicConfiguration, buildProject, debugMod
 import { LiveMonitor } from './live';
 import { ScreenPanel } from './screen';
 import { registerEditorSupport } from './editor';
+import { writeProject } from './template';
 
 let output: vscode.OutputChannel;
 
@@ -25,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('x16basic.debugFile', (uri?: vscode.Uri) => startFile(uri, false)),
         vscode.commands.registerCommand('x16basic.runFile', (uri?: vscode.Uri) => startFile(uri, true)),
         vscode.commands.registerCommand('x16basic.showScreen', () => screen.show()),
+        vscode.commands.registerCommand('x16basic.createProject', createProject),
     );
 }
 
@@ -44,6 +46,29 @@ async function startFile(uri: vscode.Uri | undefined, noDebug: boolean) {
         name: `Debug ${path.basename(file.fsPath)}`,
         program: file.fsPath,
     }, { noDebug });
+}
+
+/** Writes a starter project into a folder the user picks, then opens it. */
+async function createProject() {
+    const picked = await vscode.window.showOpenDialog({
+        canSelectFolders: true,
+        canSelectFiles: false,
+        openLabel: 'Create X16 BASIC project here',
+    });
+    if (!picked || picked.length === 0)
+        return;
+
+    const folder = picked[0].fsPath;
+    try {
+        const { skipped } = writeProject(folder);
+        if (skipped.length > 0)
+            vscode.window.showWarningMessage(`X16 BASIC: ${skipped.join(' and ')} ${skipped.length > 1 ? 'were' : 'was'} already there, so left as it was.`);
+    } catch (e: any) {
+        vscode.window.showErrorMessage(`X16 BASIC: couldn't create the project: ${e.message}`);
+        return;
+    }
+
+    await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(folder), { forceNewWindow: !!vscode.workspace.workspaceFolders?.length });
 }
 
 /** Offers "Debug <file>" for open BASIC files in the Run and Debug picker. */
