@@ -71,6 +71,7 @@ jobs:
         run: |
           dotnet pack src/BitMagic.X16Basic -c Release -p:Version=${{ steps.version.outputs.version }}
           dotnet pack src/BitMagic.X16Basic.Debugger -c Release -p:Platform=x64 -p:Version=${{ steps.version.outputs.version }}
+          dotnet pack src/BitMagic.X16Basic.Tool -c Release -p:Version=${{ steps.version.outputs.version }}
 
       - name: Extension
         working-directory: vscode

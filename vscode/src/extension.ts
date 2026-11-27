@@ -7,6 +7,7 @@ import { LiveMonitor } from './live';
 import { ScreenPanel } from './screen';
 import { registerEditorSupport } from './editor';
 import { writeProject } from './template';
+import { registerPrgCommands } from './prg';
 
 let output: vscode.OutputChannel;
 
@@ -19,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     const live = new LiveMonitor();
     const screen = new ScreenPanel();
     registerEditorSupport(context);
+    registerPrgCommands(context, output);
 
     context.subscriptions.push(
         output,

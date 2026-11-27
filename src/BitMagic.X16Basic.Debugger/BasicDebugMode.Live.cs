@@ -9,8 +9,37 @@ public sealed partial class BasicDebugMode
     public JToken? CustomRequest(string command, JObject? arguments) => command switch
     {
         "live" => Live(arguments?.Value<int?>("maxVariables") ?? 200),
+        "program" => ProgramInMemory(),
         _ => null,
     };
+
+    /// <summary>
+    /// The program in memory, eg after it's been changed at READY: as a .PRG (what SAVE would write, base64) and as text.
+    /// </summary>
+    private JObject ProgramInMemory()
+    {
+        var start = _memory.ReadWord(_symbols.Txttab);
+        var end = _memory.ReadWord(_symbols.Vartab);
+        if (end <= start + 2 || end - start > 0x9f00)
+            return new JObject { ["error"] = "There's no BASIC program in memory." };
+
+        var prg = BasicPrg.FromMemory(_memory.ReadBytes(start, end - start), start);
+        try
+        {
+            var lines = BasicPrg.Read(prg, _keywords, _settings.PetsciiCase);
+            return new JObject
+            {
+                ["prg"] = Convert.ToBase64String(prg),
+                ["text"] = BasicPrg.ToText(lines),
+                ["lines"] = lines.Count,
+                ["charset"] = _settings.PetsciiCase == PetsciiCase.Mixed ? "mixed" : "upper",
+            };
+        }
+        catch (BasicPrgException e)
+        {
+            return new JObject { ["error"] = "The program in memory is damaged: " + e.Message };
+        }
+    }
 
     private JObject Live(int maxVariables)
     {

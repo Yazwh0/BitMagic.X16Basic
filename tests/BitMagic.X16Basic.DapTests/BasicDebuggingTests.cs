@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Newtonsoft.Json.Linq;
+using BitMagic.X16Basic;
 
 namespace BitMagic.X16Basic.DapTests;
 
@@ -117,6 +118,25 @@ public sealed class BasicDebuggingTests
 
         var listing = client.SourceText(frame.Source.SourceReference!.Value);
         Assert.AreEqual("10 C=1\n20 B=2\n30 STOP", listing);
+    }
+
+    [TestMethod]
+    public void TheProgramInMemory()
+    {
+        const string Source = "10 A=1\n20 B=2\n30 STOP\n";
+        using var client = DapClient.Start();
+        client.Launch(Source, new JObject { ["stopOnEntry"] = true });
+        client.WaitForStop();
+
+        var program = client.ModeRequest("program")!;
+        Assert.AreEqual(Source, program.Value<string>("text"));
+        Assert.AreEqual(3, program.Value<int>("lines"));
+        CollectionAssert.AreEqual(BasicTokeniser.Tokenise(Source).ToPrg(), Convert.FromBase64String(program.Value<string>("prg")!));
+
+        // change A=1 to C=1, as editing at READY or a POKE would: it's what's in memory that's given
+        client.WriteMemory(0x805, (byte)'C');
+        program = client.ModeRequest("program")!;
+        Assert.AreEqual("10 C=1\n20 B=2\n30 STOP\n", program.Value<string>("text"));
     }
 
     /// <summary>

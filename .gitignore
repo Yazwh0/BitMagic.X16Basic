@@ -9,3 +9,4 @@ out/
 vscode/debugmode/
 artifacts/
 Directory.Build.user.props
+vscode/tool/
