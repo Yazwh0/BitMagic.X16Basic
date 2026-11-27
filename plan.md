@@ -138,7 +138,7 @@ Every statement leaves the native core for `gone`, so a program runs well below 
 
 | Phase | Scope | State |
 |---|---|---|
-| 0. Spike | `gone` hook, `curlin`/`txtptr`, variable and GOSUB frame layout on the live ROM | Done (`spike/`) |
+| 0. Spike | `gone` hook, `curlin`/`txtptr`, variable and GOSUB frame layout on the live ROM | Done (the spike project has gone; the ROM tests cover it) |
 | 1. Foundations | Repo, tokeniser and detokeniser, decoders, ROM reference tests, extension point design | Done |
 | 2. MVP debugger | X16D extension point; load and run `.bas`; line breakpoints; continue, pause, step into; simple variables; stop on error; program end; extension with language, grammar and launch | Done |
 | 3. Full debugging | GOSUB call stack, step over and out, arrays and FOR scopes, set variable, conditions, logpoints, watches, virtual source | Done |
