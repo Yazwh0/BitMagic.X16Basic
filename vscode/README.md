@@ -11,7 +11,9 @@ Debug Commander X16 BASIC programs in VS Code, running on the BitMagic emulator.
 - **Change variables** while stopped, numbers and strings.
 - **Stops on errors**, with BASIC's message: `?DIVISION BY ZERO ERROR IN 20`.
 - **X16 BASIC Live** in the Run and Debug view shows the line and variables while the program runs, and the line it's on is highlighted in the editor.
-- **X16 Screen** opens beside the code when debugging starts: the X16's display, updated while it runs and drawn in full at each stop. Click it and type, and the keys go to the X16. Turn off opening it with `bitMagicX16Basic.openScreen`, and open it again with "X16 BASIC: Show the X16 Screen".
+- **X16 Screen** opens beside the code when debugging starts: the X16's display, updated while it runs and drawn in full at each stop. Click it and type, and the keys go to the X16. Its toolbar shows whether the program is running or paused, with buttons to open or save the program in memory. Turn off opening it with `bitMagicX16Basic.openScreen`, and open it again with "X16 BASIC: Show the X16 Screen".
+- **Save as PRG** turns a BASIC file into a .PRG the X16 can LOAD, byte for byte what SAVE writes. **Open PRG as BASIC** does the reverse. Both are on the right-click menus, and use `bitMagicX16Basic.charset` for the character set.
+- While debugging, **Save the Program in Memory as PRG** and **Open the Program in Memory** take the program as it is in the emulator, including anything typed at READY.
 - If the program in memory isn't your file any more (changed at READY, or LOADed), it's shown as a listing of what's really there.
 
 Editing: syntax colouring for all X16 keywords, problems shown as you type (missing line numbers, duplicates, lines out of order, GOTOs to lines that don't exist), hovers for keywords and for the line a GOTO goes to, and Go to Definition on a line number.

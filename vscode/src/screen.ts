@@ -83,10 +83,11 @@ export class ScreenPanel implements vscode.Disposable {
 
         if (!this.panel)
             return;
+
+        const state = !isBasicSession(session) ? 'none' : this.running.has(session.id) ? 'running' : 'paused';
+        this.panel.webview.postMessage({ type: 'state', state });
         if (isBasicSession(session))
             this.frame();
-        else
-            this.panel.webview.postMessage({ type: 'none' });
     }
 
     private async frame() {
@@ -99,7 +100,7 @@ export class ScreenPanel implements vscode.Disposable {
             const response = await session.customRequest('getScreen', {});
             const png = response?.Display; // X16D's responses are PascalCase
             if (png)
-                this.panel?.webview.postMessage({ type: 'frame', png, running: this.running.has(session.id) });
+                this.panel?.webview.postMessage({ type: 'frame', png });
         } catch {
             // the session is ending
         } finally {
@@ -108,6 +109,12 @@ export class ScreenPanel implements vscode.Disposable {
     }
 
     private onMessage(message: any) {
+        // the toolbar's buttons: only these commands
+        if (message?.type === 'command' && ['openProgramInMemory', 'saveProgramInMemory'].includes(message.command)) {
+            vscode.commands.executeCommand(`x16basic.${message.command}`);
+            return;
+        }
+
         if (message?.type !== 'key')
             return;
 
@@ -136,9 +143,24 @@ export class ScreenPanel implements vscode.Disposable {
     #screen img { max-width: 100%; max-height: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; background: #000; }
     #screen:focus img { outline: 1px solid var(--vscode-focusBorder); }
     #status { padding: 2px 8px 6px; }
+
+    #toolbar { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-bottom: 1px solid var(--vscode-panel-border, transparent); }
+    #state { display: flex; align-items: center; gap: 6px; margin-right: auto; color: var(--vscode-foreground); }
+    #dot { width: 9px; height: 9px; border-radius: 50%; background: var(--vscode-disabledForeground); }
+    #state.running #dot { background: var(--vscode-debugIcon-startForeground, #89d185); }
+    #state.paused #dot { background: var(--vscode-debugIcon-pauseForeground, #cca700); }
+    button { font-family: inherit; font-size: inherit; padding: 3px 10px; border: none; border-radius: 2px; cursor: pointer;
+        color: var(--vscode-button-secondaryForeground); background: var(--vscode-button-secondaryBackground); }
+    button:hover:not(:disabled) { background: var(--vscode-button-secondaryHoverBackground); }
+    button:disabled { opacity: 0.5; cursor: default; }
 </style>
 </head>
 <body>
+<div id="toolbar">
+    <div id="state"><span id="dot"></span><span id="stateText">Not debugging</span></div>
+    <button id="open" title="Open the program in the emulator's memory as BASIC, in a new editor" disabled>Open as BASIC</button>
+    <button id="save" title="Save the program in the emulator's memory as a .PRG" disabled>Save as PRG</button>
+</div>
 <div id="screen" tabindex="0"><img id="image" alt="X16 screen"></div>
 <div id="status">No BASIC program is being debugged.</div>
 <script nonce="${nonce}">
@@ -146,13 +168,26 @@ export class ScreenPanel implements vscode.Disposable {
     const screen = document.getElementById('screen');
     const image = document.getElementById('image');
     const status = document.getElementById('status');
+    const stateBox = document.getElementById('state');
+    const stateText = document.getElementById('stateText');
+    const buttons = [document.getElementById('open'), document.getElementById('save')];
     const held = new Set();
-    let running = false;
+    let state = 'none';
+
+    const labels = { running: 'Running', paused: 'Paused', none: 'Not debugging' };
 
     function showStatus() {
-        const focus = document.activeElement === screen ? 'Typing goes to the X16' : 'Click the screen to type';
-        status.textContent = (running ? 'Running' : 'Stopped') + ' · ' + focus;
+        stateBox.className = state;
+        stateText.textContent = labels[state];
+        for (const b of buttons)
+            b.disabled = state === 'none';
+
+        status.textContent = state === 'none' ? 'No BASIC program is being debugged.'
+            : document.activeElement === screen ? 'Typing goes to the X16' : 'Click the screen to type';
     }
+
+    document.getElementById('open').addEventListener('click', () => vscode.postMessage({ type: 'command', command: 'openProgramInMemory' }));
+    document.getElementById('save').addEventListener('click', () => vscode.postMessage({ type: 'command', command: 'saveProgramInMemory' }));
 
     function send(code, down) {
         if (down) held.add(code); else held.delete(code);
@@ -174,10 +209,9 @@ export class ScreenPanel implements vscode.Disposable {
         const m = e.data;
         if (m.type === 'frame') {
             image.src = 'data:image/png;base64,' + m.png;
-            running = m.running;
+        } else if (m.type === 'state') {
+            state = m.state;
             showStatus();
-        } else if (m.type === 'none') {
-            status.textContent = 'No BASIC program is being debugged.';
         }
     });
 </script>

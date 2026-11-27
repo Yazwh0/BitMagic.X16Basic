@@ -35,4 +35,8 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BitMagic.X16Basic\BitMagic.X16Basic.csproj" />
+  </ItemGroup>
+
 </Project>
