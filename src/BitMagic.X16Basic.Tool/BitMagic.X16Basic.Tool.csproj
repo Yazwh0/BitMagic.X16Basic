@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>BitMagic.X16Basic.Tool</RootNamespace>
+    <AssemblyName>x16basic</AssemblyName>
+    <Description>Turns Commander X16 BASIC into .PRG files the X16 can LOAD, and .PRG files back into BASIC.</Description>
+
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>x16basic</ToolCommandName>
+    <PackageId>BitMagic.X16Basic.Tool</PackageId>
+    <!-- run on whatever .NET is installed, if it's newer than the one built for -->
+    <RollForward>LatestMajor</RollForward>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BitMagic.X16Basic\BitMagic.X16Basic.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -8,6 +8,7 @@ See [plan.md](plan.md) for the design and where it's up to, and [vscode/README.m
 
 - `src/BitMagic.X16Basic`: the BASIC library. Tokeniser (byte for byte the same as the ROM's), detokeniser, source maps, decoders for BASIC's variables, arrays, numbers and stack frames, an expression evaluator, and finding BASIC's addresses in a ROM.
 - `src/BitMagic.X16Basic.Debugger`: the debug mode X16D loads.
+- `src/BitMagic.X16Basic.Tool`: `x16basic`, a command line tool to turn BASIC into .PRG files and back. It comes with the extension, and is on NuGet as a .NET tool (`dotnet tool install -g BitMagic.X16Basic.Tool`).
 - `vscode`: the VS Code extension.
 - `tests/BitMagic.X16Basic.Tests`: unit tests.
 - `tests/BitMagic.X16Basic.RomTests`: checks the library against the real ROM running on the BitMagic emulator.

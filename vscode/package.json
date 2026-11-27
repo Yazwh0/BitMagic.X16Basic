@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "publisher": "yazwh0",
     "icon": "icon.png",
-    "license": "SEE LICENSE IN LICENSE",
+    "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
         "url": "https://github.com/Yazwh0/BitMagic.X16Basic"
@@ -97,6 +97,29 @@
                 "category": "X16 BASIC",
                 "icon": "$(play)",
                 "enablement": "editorLangId == x16basic"
+            },
+            {
+                "command": "x16basic.savePrg",
+                "title": "Save as PRG",
+                "category": "X16 BASIC",
+                "icon": "$(save-as)"
+            },
+            {
+                "command": "x16basic.openPrg",
+                "title": "Open PRG as BASIC",
+                "category": "X16 BASIC"
+            },
+            {
+                "command": "x16basic.saveProgramInMemory",
+                "title": "Save the Program in Memory as PRG",
+                "category": "X16 BASIC",
+                "enablement": "inDebugMode"
+            },
+            {
+                "command": "x16basic.openProgramInMemory",
+                "title": "Open the Program in Memory",
+                "category": "X16 BASIC",
+                "enablement": "inDebugMode"
             }
         ],
         "viewsWelcome": [
@@ -118,6 +141,35 @@
                     "when": "resourceLangId == x16basic",
                     "group": "navigation@2"
                 }
+            ],
+            "explorer/context": [
+                {
+                    "command": "x16basic.savePrg",
+                    "when": "resourceLangId == x16basic",
+                    "group": "x16basic@1"
+                },
+                {
+                    "command": "x16basic.openPrg",
+                    "when": "resourceExtname =~ /^\\.prg$/i",
+                    "group": "x16basic@2"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "x16basic.savePrg",
+                    "when": "resourceLangId == x16basic",
+                    "group": "x16basic@1"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "x16basic.saveProgramInMemory",
+                    "when": "inDebugMode && debugType == bmasm"
+                },
+                {
+                    "command": "x16basic.openProgramInMemory",
+                    "when": "inDebugMode && debugType == bmasm"
+                }
             ]
         },
         "configuration": {
@@ -132,6 +184,19 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Open the X16 Screen tab, which shows the display and takes typing, when a BASIC program starts debugging."
+                },
+                "bitMagicX16Basic.charset": {
+                    "type": "string",
+                    "enum": [
+                        "upper",
+                        "mixed"
+                    ],
+                    "default": "upper",
+                    "enumDescriptions": [
+                        "Upper case and graphics, the X16's default: letters in strings are upper case.",
+                        "Lower and upper case: letters in strings keep their case."
+                    ],
+                    "description": "The character set used when saving BASIC as a .PRG or opening a .PRG as BASIC."
                 }
             }
         },
@@ -244,11 +309,12 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile && npm run debugmode",
+        "vscode:prepublish": "npm run compile && npm run debugmode && npm run tool",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "debugmode": "node scripts/copy-debugmode.js",
-        "test": "node --test out/test/launch.test.js out/test/analysis.test.js out/test/keys.test.js out/test/template.test.js"
+        "test": "node --test out/test/launch.test.js out/test/analysis.test.js out/test/keys.test.js out/test/template.test.js out/test/prg.test.js",
+        "tool": "node scripts/copy-tool.js"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",
