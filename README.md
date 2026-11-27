@@ -14,7 +14,6 @@ See [plan.md](plan.md) for the design and where it's up to, and [vscode/README.m
 - `tests/BitMagic.X16Basic.RomTests`: checks the library against the real ROM running on the BitMagic emulator.
 - `tests/BitMagic.X16Basic.DapTests`: end to end, X16D driven over DAP.
 - `samples/hello`: `hello.bas` and a longer `demo.bas`, with launch configurations for the extension. Its `project.json` is only for running X16D without the extension (eg from X16M): the extension passes the debug mode itself, and no ROM or symbols need setting, as X16D uses the official emulator's (or its own) and the debug mode finds BASIC in the ROM.
-- `spike/`: the phase 0 project used to check the ROM hooks.
 
 ## Building
 
